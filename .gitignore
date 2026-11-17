@@ -1,0 +1,7 @@
+*.apk
+*.ipk
+*.log
+*.swp
+*.tmp
+.DS_Store
+Thumbs.db

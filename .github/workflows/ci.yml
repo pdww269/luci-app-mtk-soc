@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate JavaScript
+        run: node --check htdocs/luci-static/resources/view/mtk_soc/status.js
+
+      - name: Validate shell backend
+        run: sh -n root/usr/libexec/rpcd/luci.mtk_soc
+
+      - name: Validate JSON
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('root/usr/share/luci/menu.d/luci-app-mtk-soc.json'))"
+          node -e "JSON.parse(require('fs').readFileSync('root/usr/share/rpcd/acl.d/luci-app-mtk-soc.json'))"
+
+      - name: Run regression tests
+        run: |
+          node tests/dashboard-contract.mjs
+          node tests/null-nodes.mjs
